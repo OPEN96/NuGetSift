@@ -1,0 +1,19 @@
+# .NET build outputs
+bin/
+obj/
+*.user
+
+# NugetPrivateScoop runtime artifacts
+downloaded_private_packages/
+report.md
+report.csv
+
+# Local configuration (may contain real server address / API key — do NOT commit)
+config.json
+
+# IDE / OS
+.vs/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

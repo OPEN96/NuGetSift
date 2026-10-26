@@ -1,0 +1,26 @@
+{
+  "BaGet": {
+    "BaseUrl": "http://localhost:5000/v3/index.json",
+    "ApiKey": "",
+    "AuthType": "none"
+  },
+  "Public": {
+    "FlatContainer": "https://api.nuget.org/v3-flatcontainer"
+  },
+  "Output": {
+    "Dir": "downloaded_private_packages",
+    "ReportMd": "report.md",
+    "ReportCsv": "report.csv"
+  },
+  "Options": {
+    "Threads": 8,
+    "PageSize": 100,
+    "IncludePrerelease": true,
+    "VersionLevel": false,
+    "TreatUnknownAsPrivate": false,
+    "IdFilter": "",
+    "EnumerateMode": "search",
+    "V2BaseUrl": "",
+    "MaxRetries": 3
+  }
+}
