@@ -29,13 +29,13 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore
-        run: dotnet restore NuGetSift/NuGetSift.csproj
+        run: dotnet restore NuGetSift.csproj
 
       - name: Build
-        run: dotnet build NuGetSift/NuGetSift.csproj -c Release --no-restore
+        run: dotnet build NuGetSift.csproj -c Release --no-restore
 
       - name: Self-test (公共/私有 区分逻辑)
-        run: dotnet run --project NuGetSift/NuGetSift.csproj -c Release -- --selftest
+        run: dotnet run --project NuGetSift.csproj -c Release -- --selftest
 
   # ---------- 发布单文件可执行程序（仅在打 tag 时） ----------
   release:
@@ -56,25 +56,25 @@ jobs:
 
       # 七平台单文件发布（x64 + arm64 + linux-arm）：win / linux / osx
       - name: Publish win-x64
-        run: dotnet publish NuGetSift/NuGetSift.csproj -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/win-x64
+        run: dotnet publish NuGetSift.csproj -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/win-x64
 
       - name: Publish win-arm64
-        run: dotnet publish NuGetSift/NuGetSift.csproj -c Release -r win-arm64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/win-arm64
+        run: dotnet publish NuGetSift.csproj -c Release -r win-arm64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/win-arm64
 
       - name: Publish linux-x64
-        run: dotnet publish NuGetSift/NuGetSift.csproj -c Release -r linux-x64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/linux-x64
+        run: dotnet publish NuGetSift.csproj -c Release -r linux-x64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/linux-x64
 
       - name: Publish linux-arm64
-        run: dotnet publish NuGetSift/NuGetSift.csproj -c Release -r linux-arm64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/linux-arm64
+        run: dotnet publish NuGetSift.csproj -c Release -r linux-arm64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/linux-arm64
 
       - name: Publish linux-arm
-        run: dotnet publish NuGetSift/NuGetSift.csproj -c Release -r linux-arm -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/linux-arm
+        run: dotnet publish NuGetSift.csproj -c Release -r linux-arm -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/linux-arm
 
       - name: Publish osx-x64
-        run: dotnet publish NuGetSift/NuGetSift.csproj -c Release -r osx-x64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/osx-x64
+        run: dotnet publish NuGetSift.csproj -c Release -r osx-x64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/osx-x64
 
       - name: Publish osx-arm64
-        run: dotnet publish NuGetSift/NuGetSift.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/osx-arm64
+        run: dotnet publish NuGetSift.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/osx-arm64
 
       - name: 打包产物
         shell: bash

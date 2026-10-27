@@ -2,7 +2,6 @@
 
 > 枚举私有 NuGet 源（Bagetter / BaGet 等兼容 NuGet V3 的源），与 nuget.org 比对，**只下载「仅存在于私有源」的包**，并生成私有 / 公共区分报告。
 
-
 ---
 
 ## 特性（Features）
@@ -51,10 +50,12 @@ docker run --name nuget-server -p 5000:8080 bagetter/bagetter
 ```
 
 > **Docker 镜像加速**（可选，避免拉取超时）：在 Docker daemon 配置中加入
+>
 > ```json
 > { "registry-mirrors": ["https://docker.1ms.run"] }
 > ```
-> Windows / macOS：Docker Desktop → Settings → Docker Engine，粘贴后 Apply & Restart。
+>
+> Windows / macOS：Docker Desktop → Settings → Docker Engine，粘贴后 Apply & Restart。  
 > Linux：写入 `/etc/docker/daemon.json` 后 `sudo systemctl restart docker`。
 
 - `-p 5000:8080`：宿主机 **5000** 端口映射到容器内 **8080** 端口。
@@ -96,6 +97,7 @@ dotnet run                                           # 正式执行：下载所�
 ```
 
 **输出**：
+
 - 下载的 `.nupkg` → `downloaded_private_packages/`
 - 区分报告 → `report.md` / `report.csv`（含每个包的 私有 / 公共 分类与下载结果）
 
@@ -105,21 +107,21 @@ dotnet run                                           # 正式执行：下载所�
 
 `config.json` 字段：
 
-| 字段 | 说明 |
-| --- | --- |
-| `BaGet.BaseUrl` | 私有源服务索引地址（V3 `index.json`） |
-| `BaGet.ApiKey` | 鉴权令牌；无需鉴权时留空 |
-| `BaGet.AuthType` | `none` / `bearer`（PAT）/ `basic`（`user:pass`） |
-| `Public.FlatContainer` | 公共源 flatcontainer 基址（默认 nuget.org） |
-| `Output.Dir` | 下载目录 |
-| `Options.Threads` | 下载并发数 |
-| `Options.PageSize` | search 分页大小 |
-| `Options.IncludePrerelease` | 是否包含预发行版本 |
-| `Options.VersionLevel` | 版本级比对（仅下载 nuget.org 上没有的版本） |
-| `Options.EnumerateMode` | `search`（默认）或 `v2`（OData 全量） |
-| `Options.V2BaseUrl` | `v2` 模式下的 OData 基址，如 `https://你的源/v2` |
-| `Options.IdFilter` | 按包 ID 前缀过滤的正则（可选） |
-| `Options.TreatUnknownAsPrivate` | 比对失败时是否按私有处理 |
+| 字段                              | 说明                                           |
+| ------------------------------- | -------------------------------------------- |
+| `BaGet.BaseUrl`                 | 私有源服务索引地址（V3 `index.json`）                   |
+| `BaGet.ApiKey`                  | 鉴权令牌；无需鉴权时留空                                 |
+| `BaGet.AuthType`                | `none` / `bearer`（PAT）/ `basic`（`user:pass`） |
+| `Public.FlatContainer`          | 公共源 flatcontainer 基址（默认 nuget.org）           |
+| `Output.Dir`                    | 下载目录                                         |
+| `Options.Threads`               | 下载并发数                                        |
+| `Options.PageSize`              | search 分页大小                                  |
+| `Options.IncludePrerelease`     | 是否包含预发行版本                                    |
+| `Options.VersionLevel`          | 版本级比对（仅下载 nuget.org 上没有的版本）                  |
+| `Options.EnumerateMode llLLL`   | `search`（默认）或 `v2`（OData 全量）                 |
+| `Options.V2BaseUrl`             | `v2` 模式下的 OData 基址，如 `https://你的源/v2`        |
+| `Options.IdFilter`              | 按包 ID 前缀过滤的正则（可选）                            |
+| `Options.TreatUnknownAsPrivate` | 比对失败时是否按私有处理                                 |
 
 ---
 
