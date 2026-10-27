@@ -700,10 +700,6 @@ namespace NuGetSift
                 PropertyNameCaseInsensitive = true
             });
             if (cfg == null) throw new Exception("配置反序列化失败");
-            cfg.BaGet ??= new BaGetConfig();
-            cfg.Public ??= new PublicConfig();
-            cfg.Output ??= new OutputConfig();
-            cfg.Options ??= new OptionsConfig();
             return cfg;
         }
 
@@ -794,10 +790,10 @@ namespace NuGetSift
 
     internal class AppConfig
     {
-        public BaGetConfig BaGet { get; set; }
-        public PublicConfig Public { get; set; }
-        public OutputConfig Output { get; set; }
-        public OptionsConfig Options { get; set; }
+        public BaGetConfig BaGet { get; set; } = new BaGetConfig();
+        public PublicConfig Public { get; set; } = new PublicConfig();
+        public OutputConfig Output { get; set; } = new OutputConfig();
+        public OptionsConfig Options { get; set; } = new OptionsConfig();
     }
 
     internal class BaGetConfig
