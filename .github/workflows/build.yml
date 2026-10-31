@@ -1,105 +1,107 @@
-name: Build & Release
+name: Build
 
 on:
   push:
-    branches: [main, master]
-    tags: ['v*']
+    branches: [ main, master ]
+    tags: [ 'v*' ]
   pull_request:
-    branches: [main, master]
-
-permissions:
-  contents: write      # 用于创建 Release 与上传产物
+    branches: [ main, master ]
 
 jobs:
-  # ---------- 编译 + 自检（跨平台） ----------
+  # ---------------------------------------------------------------------------
+  # 三平台构建 + 自检
+  # ---------------------------------------------------------------------------
   build:
-    name: Build & Self-test
+    name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
 
-      - name: Setup .NET 10 SDK
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
       - name: Restore
-        run: dotnet restore NuGetSift.csproj
+        run: dotnet restore NuGetSift.slnx
 
       - name: Build
-        run: dotnet build NuGetSift.csproj -c Release --no-restore
+        run: dotnet build NuGetSift.slnx -c Release --no-restore
 
       - name: Self-test (公共/私有 区分逻辑)
-        run: dotnet run --project NuGetSift.csproj -c Release -- --selftest
+        run: dotnet run --project src/NuGetSift.Cli/NuGetSift.Cli.csproj -c Release --no-build -- --selftest
 
-  # ---------- 发布单文件可执行程序（仅在打 tag 时） ----------
+  # ---------------------------------------------------------------------------
+  # 打 v* 标签时：发布桌面客户端 + 命令行（单文件、自包含）
+  # ---------------------------------------------------------------------------
   release:
-    name: Publish (单文件 exe)
-    needs: build          # 等所有平台 build 通过后再发布
+    name: Publish release
+    needs: build
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-latest
-    env:
-      VERSION: ${{ github.ref_name }}   # 标签名（如 v1.0.0），用于产物文件名
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    permissions:
+      contents: write
 
-      - name: Setup .NET 10 SDK
+    env:
+      VERSION: ${{ github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      # 七平台单文件发布（x64 + arm64 + linux-arm）：win / linux / osx
-      - name: Publish win-x64
-        run: dotnet publish NuGetSift.csproj -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/win-x64
-
-      - name: Publish win-arm64
-        run: dotnet publish NuGetSift.csproj -c Release -r win-arm64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/win-arm64
-
-      - name: Publish linux-x64
-        run: dotnet publish NuGetSift.csproj -c Release -r linux-x64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/linux-x64
-
-      - name: Publish linux-arm64
-        run: dotnet publish NuGetSift.csproj -c Release -r linux-arm64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/linux-arm64
-
-      - name: Publish linux-arm
-        run: dotnet publish NuGetSift.csproj -c Release -r linux-arm -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/linux-arm
-
-      - name: Publish osx-x64
-        run: dotnet publish NuGetSift.csproj -c Release -r osx-x64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/osx-x64
-
-      - name: Publish osx-arm64
-        run: dotnet publish NuGetSift.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true -p:PublishTrimmed=false --self-contained true -o ./publish/osx-arm64
-
-      - name: 打包产物
+      # 桌面客户端：6 个架构（linux-arm 32 位缺少原生图形依赖，不发布桌面版）
+      - name: Publish desktop
         shell: bash
         run: |
-          cd publish
-          7z a -tzip ../NuGetSift-${{ env.VERSION }}-win-x64.zip ./win-x64/*         || zip -r ../NuGetSift-${{ env.VERSION }}-win-x64.zip ./win-x64
-          7z a -tzip ../NuGetSift-${{ env.VERSION }}-win-arm64.zip ./win-arm64/*     || zip -r ../NuGetSift-${{ env.VERSION }}-win-arm64.zip ./win-arm64
-          7z a -tzip ../NuGetSift-${{ env.VERSION }}-linux-x64.zip ./linux-x64/*      || zip -r ../NuGetSift-${{ env.VERSION }}-linux-x64.zip ./linux-x64
-          7z a -tzip ../NuGetSift-${{ env.VERSION }}-linux-arm64.zip ./linux-arm64/*  || zip -r ../NuGetSift-${{ env.VERSION }}-linux-arm64.zip ./linux-arm64
-          7z a -tzip ../NuGetSift-${{ env.VERSION }}-linux-arm.zip ./linux-arm/*      || zip -r ../NuGetSift-${{ env.VERSION }}-linux-arm.zip ./linux-arm
-          7z a -tzip ../NuGetSift-${{ env.VERSION }}-osx-x64.zip ./osx-x64/*          || zip -r ../NuGetSift-${{ env.VERSION }}-osx-x64.zip ./osx-x64
-          7z a -tzip ../NuGetSift-${{ env.VERSION }}-osx-arm64.zip ./osx-arm64/*      || zip -r ../NuGetSift-${{ env.VERSION }}-osx-arm64.zip ./osx-arm64
-          cd ..
+          set -euo pipefail
+          for rid in win-x64 win-arm64 linux-x64 linux-arm64 osx-x64 osx-arm64; do
+            echo "==> desktop $rid"
+            dotnet publish src/NuGetSift.Desktop/NuGetSift.Desktop.csproj \
+              -c Release -r "$rid" \
+              -p:PublishSingleFile=true \
+              -p:IncludeNativeLibrariesForSelfExtract=true \
+              -p:PublishTrimmed=false \
+              --self-contained true \
+              -o "./publish/desktop-$rid"
+          done
 
-      - name: 创建 GitHub Release 并上传产物
+      # 命令行：7 个架构（含 linux-arm 32 位）
+      - name: Publish cli
+        shell: bash
+        run: |
+          set -euo pipefail
+          for rid in win-x64 win-arm64 linux-x64 linux-arm64 linux-arm osx-x64 osx-arm64; do
+            echo "==> cli $rid"
+            dotnet publish src/NuGetSift.Cli/NuGetSift.Cli.csproj \
+              -c Release -r "$rid" \
+              -p:PublishSingleFile=true \
+              -p:PublishTrimmed=false \
+              --self-contained true \
+              -o "./publish/cli-$rid"
+          done
+
+      - name: Package zip
+        shell: pwsh
+        run: |
+          Get-ChildItem ./publish -Directory | ForEach-Object {
+            $name = "NuGetSift-$env:VERSION-$($_.Name).zip"
+            Write-Host "packing $name"
+            Compress-Archive -Path "$($_.FullName)/*" -DestinationPath "./$name" -Force
+          }
+          Get-ChildItem ./*.zip | Select-Object Name, Length
+
+      - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            ./NuGetSift-${{ env.VERSION }}-win-x64.zip
-            ./NuGetSift-${{ env.VERSION }}-win-arm64.zip
-            ./NuGetSift-${{ env.VERSION }}-linux-x64.zip
-            ./NuGetSift-${{ env.VERSION }}-linux-arm64.zip
-            ./NuGetSift-${{ env.VERSION }}-linux-arm.zip
-            ./NuGetSift-${{ env.VERSION }}-osx-x64.zip
-            ./NuGetSift-${{ env.VERSION }}-osx-arm64.zip
+          files: ./*.zip
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_unmatched_files: true

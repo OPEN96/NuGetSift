@@ -1,0 +1,314 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="NuGetSift.Desktop.MainWindow"
+        Title="NuGetSift — 私有 NuGet 包筛选器"
+        Width="1360" Height="880"
+        MinWidth="1140" MinHeight="720"
+        Background="{DynamicResource BgBrush}"
+        WindowStartupLocation="CenterScreen">
+
+  <Grid ColumnDefinitions="352,*">
+
+    <!-- ==================== 左侧：连接设置 ==================== -->
+    <Border Grid.Column="0"
+            Background="{DynamicResource SidebarBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,0,1,0">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="18,18,18,24" Spacing="14">
+
+          <!-- Logo -->
+          <StackPanel Orientation="Horizontal" Spacing="10" Margin="2,0,0,4">
+            <Border Width="36" Height="36" CornerRadius="10">
+              <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                  <GradientStop Offset="0" Color="#4C8DFF" />
+                  <GradientStop Offset="1" Color="#7C5CFF" />
+                </LinearGradientBrush>
+              </Border.Background>
+              <TextBlock Text="N" FontSize="19" FontWeight="Bold" Foreground="#FFFFFF"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <StackPanel VerticalAlignment="Center" Spacing="1">
+              <TextBlock Text="NuGetSift" FontSize="17" FontWeight="Bold"
+                         Foreground="{DynamicResource TextBrush}" />
+              <TextBlock Text="私有包筛选器 · v2.0" FontSize="11"
+                         Foreground="{DynamicResource MutedBrush}" />
+            </StackPanel>
+          </StackPanel>
+
+          <Border Height="1" Background="{DynamicResource BorderBrush}" Margin="0,2" />
+
+          <!-- 私有源 -->
+          <StackPanel Spacing="0">
+            <TextBlock Classes="label" Text="私有源索引地址" />
+            <TextBox Text="{Binding SourceUrl}"
+                     Watermark="http://192.168.1.12:5000/v3/index.json" />
+          </StackPanel>
+
+          <!-- 鉴权 -->
+          <Grid ColumnDefinitions="128,10,*">
+            <StackPanel Grid.Column="0" Spacing="0">
+              <TextBlock Classes="label" Text="鉴权方式" />
+              <ComboBox SelectedIndex="{Binding AuthTypeIndex}" HorizontalAlignment="Stretch">
+                <ComboBoxItem>无需鉴权</ComboBoxItem>
+                <ComboBoxItem>Bearer</ComboBoxItem>
+                <ComboBoxItem>Basic</ComboBoxItem>
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="0">
+              <TextBlock Classes="label" Text="令牌 / ApiKey" />
+              <TextBox Text="{Binding ApiKey}" PasswordChar="●" Watermark="留空表示匿名访问" />
+            </StackPanel>
+          </Grid>
+
+          <!-- 公共源 -->
+          <StackPanel Spacing="0">
+            <TextBlock Classes="label" Text="公共源（比对基准）" />
+            <TextBox Text="{Binding PublicFeed}"
+                     Watermark="https://api.nuget.org/v3-flatcontainer" />
+          </StackPanel>
+
+          <Border Height="1" Background="{DynamicResource BorderBrush}" Margin="0,2" />
+
+          <!-- 输出目录 -->
+          <StackPanel Spacing="0">
+            <TextBlock Classes="label" Text="下载目录" />
+            <Grid ColumnDefinitions="*,8,Auto">
+              <TextBox Grid.Column="0" Text="{Binding OutputDir}" />
+              <Button Grid.Column="2" Classes="ghost" Content="浏览" Command="{Binding BrowseCommand}" />
+            </Grid>
+          </StackPanel>
+
+          <!-- 枚举模式 -->
+          <Grid ColumnDefinitions="128,10,*">
+            <StackPanel Grid.Column="0" Spacing="0">
+              <TextBlock Classes="label" Text="枚举模式" />
+              <ComboBox SelectedIndex="{Binding EnumerateModeIndex}" HorizontalAlignment="Stretch">
+                <ComboBoxItem>V3 Search</ComboBoxItem>
+                <ComboBoxItem>V2 OData</ComboBoxItem>
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="0" IsVisible="{Binding IsV2Mode}">
+              <TextBlock Classes="label" Text="V2 地址" />
+              <TextBox Text="{Binding V2Url}" Watermark="http://host:5000/v2" />
+            </StackPanel>
+            <TextBlock Grid.Column="2" Classes="hint" IsVisible="{Binding !IsV2Mode}"
+                       VerticalAlignment="Bottom" Margin="0,0,0,9"
+                       Text="检索不全时改用 V2 OData" />
+          </Grid>
+
+          <!-- 线程 + 过滤 -->
+          <Grid ColumnDefinitions="128,10,*">
+            <StackPanel Grid.Column="0" Spacing="0">
+              <TextBlock Classes="label" Text="并发线程" />
+              <NumericUpDown Value="{Binding Threads}" Minimum="1" Maximum="64" Increment="1"
+                             FormatString="0" HorizontalAlignment="Stretch" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="0">
+              <TextBlock Classes="label" Text="包 ID 过滤（正则）" />
+              <TextBox Text="{Binding IdFilter}" Watermark="留空 = 全部" />
+            </StackPanel>
+          </Grid>
+
+          <Border Height="1" Background="{DynamicResource BorderBrush}" Margin="0,2" />
+
+          <!-- 开关 -->
+          <StackPanel Spacing="2">
+            <ToggleSwitch IsChecked="{Binding IncludePrerelease}" Content="包含预发布版本" />
+            <ToggleSwitch IsChecked="{Binding VersionLevel}" Content="版本级比对（公共包也下私有版本）" />
+            <ToggleSwitch IsChecked="{Binding TreatUnknown}" Content="无法判定时按私有处理" />
+            <ToggleSwitch IsChecked="{Binding DryRun}" Content="仅扫描，不下载" />
+          </StackPanel>
+
+          <Button Classes="ghost" Content="保存到 config.json" Command="{Binding SaveCommand}"
+                  HorizontalAlignment="Stretch" Margin="0,2,0,0" />
+
+          <TextBlock Text="{Binding ConfigPath}" FontSize="10" MaxLines="1"
+                     Foreground="{DynamicResource MutedBrush}"
+                     TextTrimming="CharacterEllipsis" Margin="2,0,0,0"
+                     ToolTip.Tip="{Binding ConfigPath}" />
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+
+    <!-- ==================== 右侧：主工作区 ==================== -->
+    <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*,Auto" Margin="20,18,20,14">
+
+      <!-- 顶部标题 + 操作 -->
+      <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="3" VerticalAlignment="Center">
+          <TextBlock Text="私有包筛选器" FontSize="20" FontWeight="Bold"
+                     Foreground="{DynamicResource TextBrush}" />
+          <TextBlock Text="枚举私有源 → 与公共源逐一比对 → 只下载私有源独有的包"
+                     FontSize="12" Foreground="{DynamicResource SubTextBrush}" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Button Classes="ghost" Content="测试连接" Command="{Binding TestCommand}" />
+          <Button Classes="primary" Content="开始扫描" Command="{Binding ScanCommand}" />
+          <Button Classes="accent2" Content="下载私有包" Command="{Binding DownloadCommand}" />
+          <Button Classes="danger" Content="停止" Command="{Binding StopCommand}" />
+          <Button Classes="ghost" Content="打开目录" Command="{Binding OpenOutputCommand}" />
+        </StackPanel>
+      </Grid>
+
+      <!-- 统计卡片 -->
+      <UniformGrid Grid.Row="1" Columns="6" Margin="0,16,0,0">
+        <Border Classes="card" Margin="0,0,10,0">
+          <StackPanel Spacing="3">
+            <TextBlock Classes="statLabel" Text="私有源包数" />
+            <TextBlock Classes="statValue" Text="{Binding TotalCount}" />
+          </StackPanel>
+        </Border>
+        <Border Classes="card" Margin="0,0,10,0">
+          <StackPanel Spacing="3">
+            <TextBlock Classes="statLabel" Text="私有独有" Foreground="#F5A524" />
+            <TextBlock Classes="statValue" Text="{Binding PrivateCount}" Foreground="#F5A524" />
+          </StackPanel>
+        </Border>
+        <Border Classes="card" Margin="0,0,10,0">
+          <StackPanel Spacing="3">
+            <TextBlock Classes="statLabel" Text="公共（跳过）" />
+            <TextBlock Classes="statValue" Text="{Binding PublicCount}" />
+          </StackPanel>
+        </Border>
+        <Border Classes="card" Margin="0,0,10,0">
+          <StackPanel Spacing="3">
+            <TextBlock Classes="statLabel" Text="未知" Foreground="#A78BFA" />
+            <TextBlock Classes="statValue" Text="{Binding UnknownCount}" Foreground="#A78BFA" />
+          </StackPanel>
+        </Border>
+        <Border Classes="card" Margin="0,0,10,0">
+          <StackPanel Spacing="3">
+            <TextBlock Classes="statLabel" Text="待下载版本" />
+            <TextBlock Classes="statValue" Text="{Binding PendingVersions}" />
+          </StackPanel>
+        </Border>
+        <Border Classes="card">
+          <StackPanel Spacing="3">
+            <TextBlock Classes="statLabel" Text="已下载" Foreground="#2FBF71" />
+            <TextBlock Classes="statValue" Text="{Binding DownloadedCount}" Foreground="#2FBF71" />
+          </StackPanel>
+        </Border>
+      </UniformGrid>
+
+      <!-- 包列表 -->
+      <Border Grid.Row="2" Classes="panel" Margin="0,14,0,0">
+        <Grid RowDefinitions="Auto,Auto,*">
+
+          <!-- 工具条 -->
+          <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="12,10">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+              <Button Classes="seg" Classes.active="{Binding IsFilterAll}"
+                      Content="全部" Command="{Binding FilterAllCommand}" />
+              <Button Classes="seg" Classes.active="{Binding IsFilterPrivate}"
+                      Content="私有独有" Command="{Binding FilterPrivateCommand}" />
+              <Button Classes="seg" Classes.active="{Binding IsFilterPublic}"
+                      Content="公共" Command="{Binding FilterPublicCommand}" />
+              <Button Classes="seg" Classes.active="{Binding IsFilterUnknown}"
+                      Content="未知" Command="{Binding FilterUnknownCommand}" />
+            </StackPanel>
+
+            <TextBox Grid.Column="1" Width="260" HorizontalAlignment="Right" MinHeight="30"
+                     Padding="10,5" Watermark="搜索包 ID…" Text="{Binding SearchText}" />
+
+            <TextBlock Grid.Column="2" Text="{Binding VisibleCountText}" VerticalAlignment="Center"
+                       Margin="12,0,2,0" FontSize="11.5" Foreground="{DynamicResource SubTextBrush}" />
+          </Grid>
+
+          <!-- 表头 -->
+          <Border Grid.Row="1" Background="{DynamicResource HeaderRowBrush}"
+                  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,1">
+            <Grid ColumnDefinitions="*,130,80,90,110" Margin="14,7">
+              <TextBlock Grid.Column="0" Classes="colHead" Text="包 ID" />
+              <TextBlock Grid.Column="1" Classes="colHead" Text="分类" />
+              <TextBlock Grid.Column="2" Classes="colHead" Text="版本数" />
+              <TextBlock Grid.Column="3" Classes="colHead" Text="待下载" />
+              <TextBlock Grid.Column="4" Classes="colHead" Text="状态" />
+            </Grid>
+          </Border>
+
+          <!-- 列表 / 空状态 -->
+          <ListBox Grid.Row="2" ItemsSource="{Binding VisibleRows}"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Border BorderBrush="#1B2330" BorderThickness="0,0,0,1" Padding="14,9">
+                  <Grid ColumnDefinitions="*,130,80,90,110">
+                    <TextBlock Grid.Column="0" Text="{Binding Id}"
+                               FontFamily="Cascadia Mono, Consolas, monospace" FontSize="12.5"
+                               Foreground="{DynamicResource TextBrush}"
+                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                               ToolTip.Tip="{Binding TotalVersions}" />
+                    <Border Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"
+                            CornerRadius="6" Padding="8,3" Background="#191F29">
+                      <TextBlock Text="{Binding StatusText}" Foreground="{Binding StatusBrush}"
+                                 FontSize="11" FontWeight="SemiBold" />
+                    </Border>
+                    <TextBlock Grid.Column="2" Text="{Binding VersionCount}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource SubTextBrush}" FontSize="12" />
+                    <TextBlock Grid.Column="3" Text="{Binding Pending}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource SubTextBrush}" FontSize="12" />
+                    <TextBlock Grid.Column="4" Text="{Binding DownloadText}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource MutedBrush}" FontSize="11.5" />
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+
+          <StackPanel Grid.Row="2" IsVisible="{Binding ShowEmpty}"
+                      VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
+            <Border Width="52" Height="52" CornerRadius="26" Background="#161C26"
+                    HorizontalAlignment="Center" BorderBrush="#222B38" BorderThickness="1">
+              <TextBlock Text="⌕" FontSize="24" Foreground="#4A566B"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="暂无扫描结果" FontSize="13" Foreground="{DynamicResource SubTextBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="填写私有源地址后点击「开始扫描」" FontSize="11.5"
+                       Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- 底部：状态 + 日志 -->
+      <Grid Grid.Row="3" RowDefinitions="Auto,Auto" Margin="0,12,0,0">
+        <StackPanel Grid.Row="0" Spacing="7">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding StatusText}" FontSize="12"
+                       Foreground="{DynamicResource SubTextBrush}"
+                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Classes="seg" Content="清空日志" Command="{Binding ClearLogCommand}" />
+          </Grid>
+
+          <ProgressBar Value="{Binding ProgressValue}" Maximum="100"
+                       IsIndeterminate="{Binding IsProgressIndeterminate}" />
+
+          <TextBlock Text="{Binding EndpointText}" FontSize="10.5"
+                     Foreground="{DynamicResource MutedBrush}"
+                     TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+
+        <Expander Grid.Row="1" Header="运行日志" Margin="0,10,0,0" IsExpanded="False"
+                  HorizontalAlignment="Stretch">
+          <Border Background="#0C1017" CornerRadius="8" Padding="10,8" BorderBrush="#1B2330"
+                  BorderThickness="1">
+            <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto">
+              <ItemsControl ItemsSource="{Binding Logs}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding}" FontSize="11" Margin="0,1"
+                               FontFamily="Cascadia Mono, Consolas, monospace"
+                               Foreground="#8794A8" TextWrapping="Wrap" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </Border>
+        </Expander>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>

@@ -1,0 +1,238 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NuGetSift.Desktop.App"
+             RequestedThemeVariant="Dark">
+
+  <Application.Resources>
+    <Color x:Key="SystemAccentColor">#FF3B82F6</Color>
+
+    <SolidColorBrush x:Key="BgBrush" Color="#0E1116" />
+    <SolidColorBrush x:Key="SidebarBrush" Color="#12161E" />
+    <SolidColorBrush x:Key="PanelBrush" Color="#151A23" />
+    <SolidColorBrush x:Key="CardBrush" Color="#171D28" />
+    <SolidColorBrush x:Key="CardHoverBrush" Color="#1C2330" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#232C3A" />
+    <SolidColorBrush x:Key="HeaderRowBrush" Color="#11161F" />
+
+    <SolidColorBrush x:Key="TextBrush" Color="#E8EDF6" />
+    <SolidColorBrush x:Key="SubTextBrush" Color="#8E9AAD" />
+    <SolidColorBrush x:Key="MutedBrush" Color="#5F6B7E" />
+
+    <SolidColorBrush x:Key="AccentBrush" Color="#3B82F6" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#5A96F8" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="#2FBF71" />
+    <SolidColorBrush x:Key="WarnBrush" Color="#F5A524" />
+    <SolidColorBrush x:Key="DangerBrush" Color="#EF4444" />
+    <SolidColorBrush x:Key="PurpleBrush" Color="#A78BFA" />
+
+    <!-- Fluent 控件配色覆盖，让输入控件融入暗色面板 -->
+    <SolidColorBrush x:Key="TextControlBackground" Color="#11161F" />
+    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#151B26" />
+    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#11161F" />
+    <SolidColorBrush x:Key="TextControlBorderBrush" Color="#242E3D" />
+    <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#31405A" />
+    <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#3B82F6" />
+    <SolidColorBrush x:Key="TextControlForeground" Color="#E8EDF6" />
+    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#E8EDF6" />
+    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#E8EDF6" />
+    <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#5F6B7E" />
+    <SolidColorBrush x:Key="TextControlPlaceholderForegroundPointerOver" Color="#6D798D" />
+    <SolidColorBrush x:Key="TextControlPlaceholderForegroundFocused" Color="#6D798D" />
+
+    <SolidColorBrush x:Key="ComboBoxBackground" Color="#11161F" />
+    <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#151B26" />
+    <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="#151B26" />
+    <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#242E3D" />
+    <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#31405A" />
+    <SolidColorBrush x:Key="ComboBoxForeground" Color="#E8EDF6" />
+    <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#151A23" />
+    <SolidColorBrush x:Key="ComboBoxDropDownBorderBrush" Color="#242E3D" />
+    <SolidColorBrush x:Key="ComboBoxItemBackgroundPointerOver" Color="#1D2532" />
+    <SolidColorBrush x:Key="ComboBoxItemBackgroundSelected" Color="#24334D" />
+    <SolidColorBrush x:Key="ComboBoxItemForeground" Color="#E8EDF6" />
+    <SolidColorBrush x:Key="ComboBoxItemForegroundSelected" Color="#FFFFFF" />
+
+    <SolidColorBrush x:Key="ToggleSwitchFillOff" Color="#2A3444" />
+    <SolidColorBrush x:Key="ToggleSwitchStrokeOff" Color="#3A4658" />
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+
+    <!-- ================= 基础控件 ================= -->
+    <Style Selector="Window">
+      <Setter Property="FontFamily" Value="Inter, Segoe UI, Microsoft YaHei UI, sans-serif" />
+      <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style Selector="TextBox">
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10,7" />
+      <Setter Property="MinHeight" Value="34" />
+      <Setter Property="FontSize" Value="12.5" />
+    </Style>
+
+    <Style Selector="ComboBox">
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10,6" />
+      <Setter Property="MinHeight" Value="34" />
+      <Setter Property="FontSize" Value="12.5" />
+    </Style>
+
+    <Style Selector="NumericUpDown">
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="MinHeight" Value="34" />
+      <Setter Property="FontSize" Value="12.5" />
+    </Style>
+
+    <Style Selector="Button">
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="14,8" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="MinHeight" Value="34" />
+    </Style>
+
+    <!-- ================= 按钮变体 ================= -->
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#2F6BEA" />
+      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#3D7BF5" />
+    </Style>
+    <Style Selector="Button.primary:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="#2A5FD4" />
+    </Style>
+
+    <Style Selector="Button.accent2">
+      <Setter Property="Background" Value="#1B2E4D" />
+      <Setter Property="Foreground" Value="#8FBBFF" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="#2C4670" />
+    </Style>
+    <Style Selector="Button.accent2:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#22395E" />
+    </Style>
+
+    <Style Selector="Button.ghost">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="#B9C4D4" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="#2A3444" />
+    </Style>
+    <Style Selector="Button.ghost:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#1B2331" />
+    </Style>
+
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="#EF4444" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="#4A2530" />
+    </Style>
+    <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#2A161C" />
+    </Style>
+
+    <!-- ================= 分段筛选按钮 ================= -->
+    <Style Selector="Button.seg">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="#8E9AAD" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="13,6" />
+      <Setter Property="FontWeight" Value="Normal" />
+      <Setter Property="MinHeight" Value="30" />
+      <Setter Property="CornerRadius" Value="7" />
+    </Style>
+    <Style Selector="Button.seg:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#1B2331" />
+    </Style>
+    <Style Selector="Button.seg.active">
+      <Setter Property="Background" Value="#22304A" />
+      <Setter Property="Foreground" Value="#DCE7FA" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.seg.active:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#26364F" />
+    </Style>
+
+    <!-- ================= 局部元素 ================= -->
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="14,12" />
+    </Style>
+
+    <Style Selector="Border.panel">
+      <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+
+    <Style Selector="TextBlock.label">
+      <Setter Property="Foreground" Value="{DynamicResource SubTextBrush}" />
+      <Setter Property="FontSize" Value="11.5" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Margin" Value="2,0,0,6" />
+    </Style>
+
+    <Style Selector="TextBlock.hint">
+      <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.statLabel">
+      <Setter Property="Foreground" Value="{DynamicResource SubTextBrush}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.statValue">
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="FontSize" Value="22" />
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Style Selector="TextBlock.colHead">
+      <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="ToggleSwitch">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="MinHeight" Value="30" />
+    </Style>
+
+    <Style Selector="ProgressBar">
+      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="Height" Value="6" />
+      <Setter Property="Background" Value="#1C2430" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
+    <Style Selector="ListBox">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style Selector="ListBoxItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="CornerRadius" Value="0" />
+    </Style>
+
+    <Style Selector="ScrollViewer">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+  </Application.Styles>
+</Application>

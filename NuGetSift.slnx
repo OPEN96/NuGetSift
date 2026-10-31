@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NuGetSift.Cli/NuGetSift.Cli.csproj" />
+    <Project Path="src/NuGetSift.Core/NuGetSift.Core.csproj" />
+    <Project Path="src/NuGetSift.Desktop/NuGetSift.Desktop.csproj" />
+  </Folder>
+</Solution>

@@ -2,6 +2,9 @@
 bin/
 obj/
 *.user
+publish/
+dist/
+*.zip
 
 # NugetPrivateScoop runtime artifacts
 downloaded_private_packages/

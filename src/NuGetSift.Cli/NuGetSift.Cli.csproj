@@ -1,14 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-    <RootNamespace>NuGetSift</RootNamespace>
+    <Nullable>enable</Nullable>
+    <RootNamespace>NuGetSift.Cli</RootNamespace>
     <AssemblyName>NuGetSift</AssemblyName>
-    <InvariantGlobalization>true</InvariantGlobalization>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NuGetSift.Core\NuGetSift.Core.csproj" />
+  </ItemGroup>
+
 </Project>
