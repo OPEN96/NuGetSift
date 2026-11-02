@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (拉取代码)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
@@ -50,7 +50,7 @@ jobs:
 
     steps:
       - name: Checkout (拉取代码)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4

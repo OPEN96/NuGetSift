@@ -32,7 +32,7 @@ jobs:
     steps:
       # 代码拉取
       - name: Checkout (拉取代码)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
