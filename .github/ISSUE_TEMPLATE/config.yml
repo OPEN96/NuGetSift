@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 使用问题 / 配置咨询
+    url: https://github.com/OPEN96/NuGetSift#常见问题
+    about: 先查阅 README 的「常见问题」与「配置说明」，多数使用疑问都能在这里找到答案。
+  - name: 💬 讨论与问答
+    url: https://github.com/OPEN96/NuGetSift/discussions
+    about: 用法讨论、经验分享、不确定的想法，欢迎发到 Discussions。
+  - name: 🔒 安全漏洞（请勿公开提交）
+    url: https://github.com/OPEN96/NuGetSift/security/advisories/new
+    about: 发现安全漏洞请走私密报告入口，不要公开提 Issue。

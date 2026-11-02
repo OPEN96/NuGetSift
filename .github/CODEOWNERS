@@ -1,0 +1,18 @@
+# 代码所有者：被自动请求 review。
+# 语法见 https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# 默认所有者
+*                       @OPEN96
+
+# 共享引擎：逻辑改动影响两端，需重点 review
+/src/NuGetSift.Core/    @OPEN96
+
+# 桌面客户端
+/src/NuGetSift.Desktop/ @OPEN96
+
+# 命令行
+/src/NuGetSift.Cli/     @OPEN96
+
+# CI / 工作流 / 构建脚本
+/.github/workflows/     @OPEN96
+/scripts/               @OPEN96

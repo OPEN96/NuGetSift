@@ -1,0 +1,29 @@
+# 统一换行符，保证跨平台可复现构建。
+# 关键：shell 脚本必须是 LF，否则在 Linux / macOS 的 CI runner 上会出现 `\r` 导致语法错误。
+
+# 默认：文本文件自动归一化（仓库内统一存 LF）
+* text=auto
+
+# shell 脚本强制 LF（含 CI 中通过 bash 调用的入口）
+*.sh    text eol=lf
+*.bash  text eol=lf
+
+# YAML / JSON / Markdown / 配置模板 统一 LF
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.cs    text eol=lf
+*.csproj text eol=lf
+*.slnx  text eol=lf
+
+# PowerShell 脚本在 Windows 上用 CRLF 更稳妥
+*.ps1   text eol=crlf
+
+# 二进制文件不做任何转换
+*.png   binary
+*.ico   binary
+*.zip   binary
+*.nupkg binary
+*.dll   binary
+*.pdb   binary

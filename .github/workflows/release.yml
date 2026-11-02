@@ -1,0 +1,83 @@
+# ==============================================================================
+# Release：代码拉取 → 验证(构建+自检) → 多架构发布 → 打包 → 上传 GitHub Release
+#
+# 触发方式（二选一）：
+#   1) 推送 v* 标签：  git tag v1.0.0 && git push origin v1.0.0
+#   2) 手动运行：      Actions → Release → Run workflow，填 version（如 v1.0.0）
+#
+# 产物：NuGetSift-<version>-desktop-<rid>.zip / NuGetSift-<version>-cli-<rid>.zip
+#   - 桌面客户端 6 架构：win-x64 / win-arm64 / linux-x64 / linux-arm64 / osx-x64 / osx-arm64
+#   - 命令行     7 架构：以上 6 个 + linux-arm（32 位 ARM 无原生图形依赖，仅出 CLI）
+# ==============================================================================
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '发布版本号（如 v1.0.0）；留空则使用当前 ref 名称'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  # ---- 发布前把关：三选一平台跑一次完整 CI，确保待测代码能构建、自检通过 ----
+  verify:
+    name: Verify (build & self-test)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (拉取代码)
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore / Build / Self-test
+        shell: bash
+        run: bash ./scripts/build.sh ci
+
+  # ---- 正式发布 ----
+  publish:
+    name: Publish & upload artifacts
+    needs: verify
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout (拉取代码)
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Resolve version
+        id: ver
+        shell: bash
+        run: |
+          V="${{ inputs.version }}"
+          if [ -z "$V" ]; then V="${GITHUB_REF_NAME}"; fi
+          echo "value=$V" >> "$GITHUB_OUTPUT"
+          echo "发布版本: $V"
+
+      # 调用统一脚本：发布 13 个 RID 产物 + 打包为 zip
+      - name: Publish all RIDs & package
+        shell: bash
+        run: |
+          bash ./scripts/build.sh publish "${{ steps.ver.outputs.value }}"
+          bash ./scripts/build.sh package "${{ steps.ver.outputs.value }}"
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.value }}
+          name: NuGetSift ${{ steps.ver.outputs.value }}
+          files: ./*.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: true

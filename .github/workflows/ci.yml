@@ -1,0 +1,59 @@
+# ==============================================================================
+# CI：代码拉取 → 还原 → 构建 → 自检
+# 在 Windows / Ubuntu / macOS 三平台并行验证，确保跨平台可构建。
+# 所有命令统一走 scripts/build.sh，保证「本地怎么跑，CI 就怎么跑」。
+# ==============================================================================
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+# 同一分支的新提交自动取消旧的进行中任务，节约 CI 资源
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build & Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+
+    steps:
+      # 代码拉取
+      - name: Checkout (拉取代码)
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          cache: true
+          cache-dependency-path: |
+            **/*.csproj
+            **/packages.lock.json
+
+      # 还原 → 构建 → 自检（公共/私有 区分逻辑 3/3）
+      - name: Restore / Build / Self-test
+        shell: bash
+        run: bash ./scripts/build.sh ci
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-logs-${{ matrix.os }}
+          path: |
+            **/bin/Release/**/*.log
+            **/obj/**/*.log
+          if-no-files-found: ignore
